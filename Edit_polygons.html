@@ -1,0 +1,107 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Natural Resources Demo Activity 2 | Sample | ArcGIS Maps SDK for JavaScript 4.29</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.29/"></script>
+
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .layer-list-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 10;
+      background-color: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .text-box {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px;
+      font-size: 20px;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      border-radius: 5px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+
+  <script>
+    require([
+        "esri/WebMap",
+        "esri/views/MapView",
+        "esri/widgets/Editor",
+        "esri/widgets/LayerList",
+        "esri/widgets/Zoom"
+      ], (
+        WebMap, MapView, Editor, LayerList, Zoom
+      ) => {
+
+        // Create a map from the referenced webmap item id
+        const webmap = new WebMap({
+          portalItem: {
+            id: "91d72809056849a0aad99fd547b0500f"
+          }
+        });
+
+        const view = new MapView({
+          container: "viewDiv",
+          map: webmap
+        });
+
+        view.when(() => {
+          // Add the Editor widget
+          const editor = new Editor({
+            view: view
+          });
+          view.ui.add(editor, "top-right");
+
+          // Create the LayerList widget
+          const layerList = new LayerList({
+            view: view
+          });
+
+          // Add LayerList to the bottom-left of the view
+          view.ui.add(layerList, {
+            position: "bottom-left"
+          });
+
+          // Add a text box in the upper-left corner
+          const textBox = document.createElement("div");
+          textBox.className = "text-box";
+          textBox.innerText = "Demo activity 1";
+          document.body.appendChild(textBox);
+
+          // Move the Zoom widget to the bottom-right corner
+          const zoom = new Zoom({
+            view: view
+          });
+          view.ui.move("zoom", "bottom-right");
+        });
+      });
+  </script>
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+</body>
+
+</html>
