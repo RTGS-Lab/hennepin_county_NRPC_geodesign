@@ -32,9 +32,9 @@
     .text-box {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 60px;
       z-index: 10;
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 1);
       padding: 10px;
       font-size: 20px;
       font-family: Arial, sans-serif;
@@ -50,9 +50,10 @@
         "esri/views/MapView",
         "esri/widgets/Editor",
         "esri/widgets/LayerList",
+        "esri/widgets/Legend",
         "esri/widgets/Zoom"
       ], (
-        WebMap, MapView, Editor, LayerList, Zoom
+        WebMap, MapView, Editor, LayerList, Legend, Zoom
       ) => {
 
         // Create a map from the referenced webmap item id
@@ -100,11 +101,14 @@
           textBox.innerText = "Demo activity 1";
           document.body.appendChild(textBox);
 
-          // Move the Zoom widget to the bottom-right corner
-          const zoom = new Zoom({
+
+
+           // Add a default Legend widget - New Code
+           const legend = new Legend({
             view: view
           });
-          view.ui.move("zoom", "bottom-right");
+          view.ui.add(legend, "bottom-right");  // Position the Legend at the bottom right
+         
         });
       });
   </script>

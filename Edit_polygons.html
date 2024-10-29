@@ -32,9 +32,9 @@
     .text-box {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 60px;
       z-index: 10;
-      background-color: rgba(255, 255, 255, 0.8);
+      background-color: rgba(255, 255, 255, 1);
       padding: 10px;
       font-size: 20px;
       font-family: Arial, sans-serif;
@@ -50,9 +50,10 @@
         "esri/views/MapView",
         "esri/widgets/Editor",
         "esri/widgets/LayerList",
+        "esri/widgets/Legend",
         "esri/widgets/Zoom"
       ], (
-        WebMap, MapView, Editor, LayerList, Zoom
+        WebMap, MapView, Editor, LayerList, Legend, Zoom
       ) => {
 
         // Create a map from the referenced webmap item id
@@ -68,12 +69,21 @@
         });
 
         view.when(() => {
-          // Add the Editor widget
+          // Log each layer with its index and title in the WebMap
+          webmap.layers.forEach((layer, index) => {
+          console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
+          });
+
+          // Add the Editor widget with attachmentsOnUpdateEnabled set to false
           const editor = new Editor({
-            view: view
+            view: view,
+            layerInfos: [{
+              layer: webmap.layers.getItemAt(3),  // Specify your editable layer here
+              attachmentsOnUpdateEnabled: false,  // Disable attachments during updates
+              attachmentsOnCreateEnabled: false
+            }]
           });
           view.ui.add(editor, "top-right");
-
           // Create the LayerList widget
           const layerList = new LayerList({
             view: view
@@ -87,14 +97,15 @@
           // Add a text box in the upper-left corner
           const textBox = document.createElement("div");
           textBox.className = "text-box";
-          textBox.innerText = "Demo activity 1";
+          textBox.innerText = "Demo activity 2";
           document.body.appendChild(textBox);
 
-          // Move the Zoom widget to the bottom-right corner
-          const zoom = new Zoom({
+           // Add a default Legend widget - New Code
+           const legend = new Legend({
             view: view
           });
-          view.ui.move("zoom", "bottom-right");
+          view.ui.add(legend, "bottom-right");  // Position the Legend at the bottom right
+
         });
       });
   </script>
