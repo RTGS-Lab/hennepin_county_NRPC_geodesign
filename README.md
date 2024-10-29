@@ -3,7 +3,7 @@
 This repository houses two web apps built to support comprehensive planning. 
 
 ## Data
-All data are stored on ArcGIS Online under the NRPC Group.
+All data are stored on ArcGIS Online under the 2024 NRPC Content ArcGIS Online Group ([link](https://umn.maps.arcgis.com/home/group.html?id=140d0f4b9e224818bafd77f45a852693#overview)).
 
 ## Deployment
 
