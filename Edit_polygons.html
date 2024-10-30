@@ -71,19 +71,27 @@
         view.when(() => {
           // Log each layer with its index and title in the WebMap
           webmap.layers.forEach((layer, index) => {
-          console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
+            console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
           });
 
-          // Add the Editor widget with attachmentsOnUpdateEnabled set to false
+          // Add the Editor widget, enabling editing only on layer at index 3 and disabling it on layer at index 4
           const editor = new Editor({
             view: view,
-            layerInfos: [{
-              layer: webmap.layers.getItemAt(3),  // Specify your editable layer here
-              attachmentsOnUpdateEnabled: false,  // Disable attachments during updates
-              attachmentsOnCreateEnabled: false
-            }]
+            layerInfos: [
+              {
+                layer: webmap.layers.getItemAt(3),  // Enable editing only on this layer
+                attachmentsOnUpdateEnabled: false,
+                attachmentsOnCreateEnabled: false,
+                enabled: true  // Ensure this layer remains editable
+              },
+              {
+                layer: webmap.layers.getItemAt(4),  // Explicitly disable editing on this layer
+                enabled: false  // Disables editing for this layer
+              }
+            ]
           });
           view.ui.add(editor, "top-right");
+
           // Create the LayerList widget
           const layerList = new LayerList({
             view: view
@@ -100,8 +108,8 @@
           textBox.innerText = "Demo activity 2";
           document.body.appendChild(textBox);
 
-           // Add a default Legend widget - New Code
-           const legend = new Legend({
+          // Add a default Legend widget
+          const legend = new Legend({
             view: view
           });
           view.ui.add(legend, "bottom-right");  // Position the Legend at the bottom right
