@@ -32,7 +32,7 @@
     .text-box {
       position: absolute;
       top: 10px;
-      left: 60px;
+      left: 0px;
       z-index: 10;
       background-color: rgba(255, 255, 255, 1);
       padding: 10px;
@@ -79,13 +79,13 @@
             view: view,
             layerInfos: [
               {
-                layer: webmap.layers.getItemAt(3),  // Enable editing only on this layer
+                layer: webmap.layers.getItemAt(5),  // Enable editing only on this layer
                 attachmentsOnUpdateEnabled: false,
                 attachmentsOnCreateEnabled: false,
                 enabled: true  // Ensure this layer remains editable
               },
               {
-                layer: webmap.layers.getItemAt(4),  // Explicitly disable editing on this layer
+                layer: webmap.layers.getItemAt(6),  // Explicitly disable editing on this layer
                 enabled: false  // Disables editing for this layer
               }
             ]
