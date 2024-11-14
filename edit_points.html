@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -44,6 +46,11 @@
     }
   </style>
 
+</head>
+
+<body>
+  <div id="viewDiv"></div>
+
   <script>
     require([
         "esri/WebMap",
@@ -69,21 +76,31 @@
         });
 
         view.when(() => {
-           // Log each layer with its index and title in the WebMap
+
+          // Debug information - layer listing
+          console.log("Available Layers:");
           webmap.layers.forEach((layer, index) => {
-          console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
+            console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
           });
 
-          // Add the Editor widget with attachmentsOnUpdateEnabled set to false
-          const editor = new Editor({
-            view: view,
-            layerInfos: [{
-              layer: webmap.layers.getItemAt(3),  // Specify your editable layer here
-              attachmentsOnUpdateEnabled: false,  // Disable attachments during updates
-              attachmentsOnCreateEnabled: false
-            }]
-          });
-          view.ui.add(editor, "top-right");
+          // Find the layer by title
+          const targetLayer = webmap.layers.find(layer => 
+            layer.title === "20241031_Demo_Layer"  
+          );
+
+          if (targetLayer) {
+            const editor = new Editor({
+              view: view,
+              layerInfos: [{
+                layer: targetLayer,
+                attachmentsOnUpdateEnabled: false,
+                attachmentsOnCreateEnabled: false
+              }]
+            });
+            view.ui.add(editor, "top-right");
+          } else {
+            console.warn("Target layer not found!");
+          }
 
           // Create the LayerList widget
           const layerList = new LayerList({
@@ -112,10 +129,7 @@
         });
       });
   </script>
-</head>
 
-<body>
-  <div id="viewDiv"></div>
 </body>
 
 </html>
