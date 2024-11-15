@@ -50,7 +50,7 @@
 
 <body>
   <div id="viewDiv"></div>
-  
+
   <script>
     require([
         "esri/WebMap",
@@ -63,7 +63,7 @@
         WebMap, MapView, Editor, LayerList, Legend, Zoom
       ) => {
 
-        // Create a map from the referenced webmap item id
+        // Create a map from the webmap id for "20241031_Demo_polygons_map" in ArcGIS Online
         const webmap = new WebMap({
           portalItem: {
             id: "91d72809056849a0aad99fd547b0500f"
@@ -77,22 +77,33 @@
 
         view.when(() => {
           // Log each layer with its index and title in the WebMap
+          console.log("Available Layers:");
           webmap.layers.forEach((layer, index) => {
             console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
           });
 
-          // Add the Editor widget, enabling editing only on layer at index 3 and disabling it on layer at index 4
+          // Find the editable layer by title - this one is called "20241031_Demo_Polygons" and is on ArcGIS Online
+          const editLayer = webmap.layers.find(layer => 
+            layer.title === "20241031_Demo_Polygons"  
+          );   
+
+          // Find the layer we don't want to be abel to edit by title - this one is "20241031_Demo_Layer" and is on ArcGIS Online
+          const noneditLayer = webmap.layers.find(layer => 
+            layer.title === "20241031_Demo_Layer"  
+          );  
+
+          // Add the Editor widget, enabling editing only on editLayer and not allowing editing on noneditLayer
           const editor = new Editor({
             view: view,
             layerInfos: [
               {
-                layer: webmap.layers.getItemAt(6),  // Enable editing only on this layer
-                attachmentsOnUpdateEnabled: false,
+                layer: editLayer,  
+                attachmentsOnUpdateEnabled: false, // turn off attachments from showing up in the editor widget
                 attachmentsOnCreateEnabled: false,
                 enabled: true  // Ensure this layer remains editable
               },
               {
-                layer: webmap.layers.getItemAt(5),  // Explicitly disable editing on this layer
+                layer: noneditLayer,  // Explicitly disable editing on this layer
                 enabled: false  // Disables editing for this layer
               }
             ]
@@ -115,7 +126,7 @@
           textBox.innerText = "Demo activity 2";
           document.body.appendChild(textBox);
 
-          // Add a default Legend widget
+          // Add a default Legend widget - change legend setting in ArcGIS Online for additional control about what shows here
           const legend = new Legend({
             view: view
           });

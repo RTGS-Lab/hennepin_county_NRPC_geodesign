@@ -63,7 +63,7 @@
         WebMap, MapView, Editor, LayerList, Legend, Zoom
       ) => {
 
-        // Create a map from the referenced webmap item id
+        // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
         const webmap = new WebMap({
           portalItem: {
             id: "bc54085fffa045a5a4911f3274ab97e0"
@@ -77,17 +77,18 @@
 
         view.when(() => {
 
-          // Debug information - layer listing
+          // Log each layer with its index and title in the WebMap
           console.log("Available Layers:");
           webmap.layers.forEach((layer, index) => {
             console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
           });
 
-          // Find the layer by title
+          // Find the layer we're editing by title
           const targetLayer = webmap.layers.find(layer => 
-            layer.title === "20241031_Demo_Layer"  
+            layer.title === "20241031_Demo_Layer"  // Change to appropriate layer if using for another webapp or project
           );
 
+          //create editor, change settings to remove the ability to add or edit attachments
           if (targetLayer) {
             const editor = new Editor({
               view: view,
@@ -120,7 +121,7 @@
 
 
 
-           // Add a default Legend widget - New Code
+           // Add a default Legend widget - change the settings within feature layer to prevent layers from showing up on legend
            const legend = new Legend({
             view: view
           });
