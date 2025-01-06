@@ -31,7 +31,7 @@ require([
 
       // Find the layer we're editing by title
       const targetLayer = webmap.layers.find(layer => 
-        layer.title === "20241031_Demo_Layer"  // Change to appropriate layer if using for another webapp or project
+        layer.title === "20250107_Activity_1"  // Change to appropriate layer if using for another webapp or project
       );
 
       // Create editor, change settings to remove the ability to add or edit attachments
