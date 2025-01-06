@@ -29,8 +29,8 @@ require([
       });
   
       // Find the editable and non-editable layers
-      const editLayer = webmap.layers.find(layer => layer.title === "20241031_Demo_Polygons");
-      const noneditLayer = webmap.layers.find(layer => layer.title === "20241031_Demo_Layer");
+      const editLayer = webmap.layers.find(layer => layer.title === "20250107_Activity_2");
+      const noneditLayer = webmap.layers.find(layer => layer.title === "20250107_Activity_1");
   
       // Add the Editor widget
       const editor = new Editor({
