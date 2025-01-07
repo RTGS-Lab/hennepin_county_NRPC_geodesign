@@ -62,7 +62,7 @@ require([
       // Add a text box in the upper-left corner
       const textBox = document.createElement("div");
       textBox.className = "text-box";
-      textBox.innerText = "Demo activity 1";
+      textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your city?";
       document.body.appendChild(textBox);
 
       // Add a default Legend widget
