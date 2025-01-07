@@ -65,6 +65,12 @@ require([
       textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your city?";
       document.body.appendChild(textBox);
 
+      // Add the link box for sources
+      const linkBox = document.createElement("div");
+      linkBox.className = "link-box";
+      linkBox.innerHTML = '<a href="https://z.umn.edu/a2br" target="_blank">More about the layers</a>';
+      document.body.appendChild(linkBox);
+          
       // Add a default Legend widget
       const legend = new Legend({
         view: view
