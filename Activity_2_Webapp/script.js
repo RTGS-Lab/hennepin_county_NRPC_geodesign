@@ -1,12 +1,13 @@
 require([
     "esri/WebMap",
     "esri/views/MapView",
+    "esri/widgets/Home",
     "esri/widgets/Editor",
     "esri/widgets/LayerList",
     "esri/widgets/Legend",
     "esri/widgets/Zoom"
   ], (
-    WebMap, MapView, Editor, LayerList, Legend, Zoom
+    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom
   ) => {
   
     // Create a map from the webmap id
@@ -18,8 +19,42 @@ require([
   
     const view = new MapView({
       container: "viewDiv",
-      map: webmap
+      map: webmap,
+      constraints: {
+        rotationEnabled: false
+      }
     });
+
+    view.when(() => {
+      // Create a container div for the Legend
+      const legendContainer = document.createElement("div");
+      legendContainer.id = "legend-container";
+      document.body.appendChild(legendContainer);
+  
+      // Add the Legend widget to the container
+      const legend = new Legend({
+        view: view,
+        container: legendContainer
+      });
+  
+      view.ui.add(legendContainer, {
+        position: "top-left",
+        index: 1
+      });
+    });
+
+    const home = new Home({
+      view: view
+    });
+  
+    // Add the Home widget to a custom position
+    const homeContainer = document.createElement("div");
+    homeContainer.className = "home-container";
+    document.body.appendChild(homeContainer);
+  
+    home.container = homeContainer;
+  
+    view.ui.add(homeContainer, "manual");
   
     view.when(() => {
       // Log each layer with its index and title
@@ -29,8 +64,8 @@ require([
       });
   
       // Find the editable and non-editable layers
-      const editLayer = webmap.layers.find(layer => layer.title === "20250107_Activity_2");
-      const noneditLayer = webmap.layers.find(layer => layer.title === "20250107_Activity_1");
+      const editLayer = webmap.layers.find(layer => layer.title === "Winter Workshop Activity 2");
+      const noneditLayer = webmap.layers.find(layer => layer.title === "Winter Workshop Activity 1");
   
       // Add the Editor widget
       const editor = new Editor({
@@ -57,7 +92,7 @@ require([
       // Add a text box in the upper-left corner
       const textBox = document.createElement("div");
       textBox.className = "text-box";
-      textBox.innerText = "How can we connect these 'no-brainer' areas across your cities?";
+      textBox.innerText = "How can we connect these 'no-brainer' areas across your jurisdictions?";
       document.body.appendChild(textBox);
   
       // Add the link box for sources
@@ -68,8 +103,7 @@ require([
     
 
       // Add the Legend widget
-      const legend = new Legend({ view: view });
-      view.ui.add(legend, "bottom-right");
+
     });
   });
   

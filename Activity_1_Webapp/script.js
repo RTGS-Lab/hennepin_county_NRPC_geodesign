@@ -1,12 +1,13 @@
 require([
     "esri/WebMap",
     "esri/views/MapView",
+    "esri/widgets/Home",
     "esri/widgets/Editor",
     "esri/widgets/LayerList",
     "esri/widgets/Legend",
     "esri/widgets/Zoom"
   ], (
-    WebMap, MapView, Editor, LayerList, Legend, Zoom
+    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom
   ) => {
 
     // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
@@ -18,8 +19,43 @@ require([
 
     const view = new MapView({
       container: "viewDiv",
-      map: webmap
+      map: webmap,
+      constraints: {
+        rotationEnabled: false
+      }
     });
+
+    view.when(() => {
+      // Create a container div for the Legend
+      const legendContainer = document.createElement("div");
+      legendContainer.id = "legend-container";
+      document.body.appendChild(legendContainer);
+  
+      // Add the Legend widget to the container
+      const legend = new Legend({
+        view: view,
+        container: legendContainer
+      });
+  
+      view.ui.add(legendContainer, {
+        position: "top-left",
+        index: 1
+      });
+    });
+
+    const home = new Home({
+      view: view
+    });
+  
+    // Add the Home widget to a custom position
+    const homeContainer = document.createElement("div");
+    homeContainer.className = "home-container";
+    document.body.appendChild(homeContainer);
+  
+    home.container = homeContainer;
+  
+    view.ui.add(homeContainer, "manual");
+  
 
     view.when(() => {
 
@@ -31,7 +67,7 @@ require([
 
       // Find the layer we're editing by title
       const targetLayer = webmap.layers.find(layer => 
-        layer.title === "20250107_Activity_1"  // Change to appropriate layer if using for another webapp or project
+        layer.title === "Winter Workshop Activity 1"  // Change to appropriate layer if using for another webapp or project
       );
 
       // Create editor, change settings to remove the ability to add or edit attachments
@@ -62,7 +98,7 @@ require([
       // Add a text box in the upper-left corner
       const textBox = document.createElement("div");
       textBox.className = "text-box";
-      textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your city?";
+      textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your jurisdiction?";
       document.body.appendChild(textBox);
 
       // Add the link box for sources
@@ -71,10 +107,11 @@ require([
       linkBox.innerHTML = '<a href="https://z.umn.edu/a2br" target="_blank">More about the layers</a>';
       document.body.appendChild(linkBox);
           
-      // Add a default Legend widget
-      const legend = new Legend({
-        view: view
-      });
-      view.ui.add(legend, "bottom-right");  // Position the Legend at the bottom right
+      // Add a box for link to Activity 2 app
+      const secondlinkBox = document.createElement("div");
+      secondlinkBox.className = "second-link-box";
+      secondlinkBox.innerHTML = '<a href ="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
+      document.body.appendChild(secondlinkBox);
+
     });
   });
