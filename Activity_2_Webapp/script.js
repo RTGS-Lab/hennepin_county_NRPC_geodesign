@@ -92,7 +92,7 @@ require([
       // Add a text box in the upper-left corner
       const textBox = document.createElement("div");
       textBox.className = "text-box";
-      textBox.innerText = "How can we connect these 'no-brainer' areas across your jurisdictions?";
+      textBox.innerText = "How can we connect these no-brainer areas across your jurisdictions?";
       document.body.appendChild(textBox);
   
       // Add the link box for sources
