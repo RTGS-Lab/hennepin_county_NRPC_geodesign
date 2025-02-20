@@ -5,10 +5,28 @@ require([
     "esri/widgets/Editor",
     "esri/widgets/LayerList",
     "esri/widgets/Legend",
-    "esri/widgets/Zoom"
+    "esri/widgets/Zoom",
+    "esri/identity/OAuthInfo",
+    "esri/identity/IdentityManager"
   ], (
-    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom
+    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
   ) => {
+      const oAuthInfo = new OAuthInfo({
+          appId: "cONmsZKxYyrtqNqJ",
+          popup: true, // Set to true if you want the authentication to happen in a popup window
+          popupCallbackUrl: "https://z.umn.edu/NRPCActivity1/callback" // Set this to your callback URL if it's different from the default
+              });
+      
+      // Register OAuth Info with IdentityManager
+      IdentityManager.registerOAuthInfos([oAuthInfo]);
+
+      // Check if user is already signed in
+      IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
+          loadWebMap();
+      }).catch(() => {
+          // User is not signed in, prompt for sign in
+          IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing");
+      });
   
     // Create a map from the webmap id
     const webmap = new WebMap({
