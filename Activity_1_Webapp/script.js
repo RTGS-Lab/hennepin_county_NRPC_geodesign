@@ -5,11 +5,30 @@ require([
     "esri/widgets/Editor",
     "esri/widgets/LayerList",
     "esri/widgets/Legend",
-    "esri/widgets/Zoom"
+    "esri/widgets/Zoom",
+    "esri/identity/OAuthInfo",
+    "esri/identity/IdentityManager"
   ], (
-    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom
+    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
   ) => {
-
+      // Create an OAuthInfo object
+      const oAuthInfo = new OAuthInfo({
+          appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
+          popup: true, // Open OAuth in a popup window
+          popupCallbackUrl: "https://z.umn.edu/NRPCActivity1/callback" // Redirect back to web app
+              });
+      
+      // Register OAuth Info with IdentityManager
+      IdentityManager.registerOAuthInfos([oAuthInfo]);
+      
+      //Check if user is already signed in
+      IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
+          loadWebMap();
+      }).catch(() => {
+          // User is not signed in, prompt for sign in
+          IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing");
+      });
+      
     // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
     const webmap = new WebMap({
       portalItem: {
