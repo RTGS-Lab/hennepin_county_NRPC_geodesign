@@ -75,7 +75,6 @@ require([
   
     view.ui.add(homeContainer, "manual");
   
-
     view.when(() => {
 
       // Log each layer with its index and title in the WebMap
