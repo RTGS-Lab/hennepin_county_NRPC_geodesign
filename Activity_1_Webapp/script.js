@@ -17,9 +17,24 @@ require([
           popup: true, // Open OAuth in a popup window
           popupCallbackUrl: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html" // Redirect back to web app
               });
-      
+
       // Register OAuth Info with IdentityManager
       IdentityManager.registerOAuthInfos([oAuthInfo]);
+
+      // Add an event listener to handle messages from the callback.html
+        window.addEventListener("message", function(event) {
+          if (event.origin !== "https://rtgs-lab.github.io") {
+            console.warn("Unauthorized message origin:", event.origin);
+            return;
+          }
+
+          const tokenUrl = event.data; // URL containing the token
+          IdentityManager.handleRedirect(tokenUrl).then(() => {
+            console.log("User successfully signed in!");
+          }).catch((error) => {
+            console.error("Error handling redirect:", error);
+          });
+        });
       
       //Check if user is already signed in
       IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
