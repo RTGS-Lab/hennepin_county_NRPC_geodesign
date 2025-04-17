@@ -31,9 +31,13 @@ require([
 
     console.log("Received message:", event.data);
 
+    const receivedUrl = newURL(event.data);
+    console.log("Extracted URL:", receivedURL.href);
+    
     // Extract the authorization code from the received URL
-    const urlParams = new URLSearchParams(new URL(event.data).search);
+    const urlParams = new URLSearchParams(receivedUrl.search);
     const authorizationCode = urlParams.get("code");
+    console.log("Authorization Code:", authorizationCode);
 
     if (authorizationCode) {
       console.log("Authorization code received:", authorizationCode);
