@@ -14,7 +14,7 @@ require([
       const oAuthInfo = new OAuthInfo({
           appId: "cONmsZKxYyrtqNqJ",
           popup: true, // Set to true if you want the authentication to happen in a popup window
-          popupCallbackUrl: "https://z.umn.edu/NRPCActivity1/callback.html" // Set this to your callback URL if it's different from the default
+          popupCallbackUrl: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_2_Webapp/callback.html" // Set this to your callback URL if it's different from the default
               });
       
       // Register OAuth Info with IdentityManager
