@@ -15,7 +15,7 @@ require([
       const oAuthInfo = new OAuthInfo({
           appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
           popup: true, // Open OAuth in a popup window
-          popupCallbackUrl: "https://z.umn.edu/NRPCActivity1/callback" // Redirect back to web app
+          popupCallbackUrl: "https://z.umn.edu/NRPCActivity1/callback.html" // Redirect back to web app
               });
       
       // Register OAuth Info with IdentityManager
