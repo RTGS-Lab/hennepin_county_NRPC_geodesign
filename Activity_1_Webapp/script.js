@@ -31,7 +31,7 @@ require([
 
     console.log("Received message:", event.data);
 
-    const receivedUrl = newURL(event.data);
+    const receivedUrl = new URL(event.data);
     console.log("Extracted URL:", receivedURL.href);
     
     // Extract the authorization code from the received URL
