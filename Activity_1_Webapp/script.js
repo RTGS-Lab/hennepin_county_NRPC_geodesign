@@ -33,7 +33,7 @@ require([
 
     // Parse received message for URL
     const receivedUrl = new URL(event.data);
-    console.log("Extracted URL:", receivedURL.href);
+    console.log("Extracted URL:", receivedUrl.href);
     
     // Extract the authorization code from the received URL
     const urlParams = new URLSearchParams(receivedUrl.search);
