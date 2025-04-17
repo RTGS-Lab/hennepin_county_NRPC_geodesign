@@ -1,111 +1,101 @@
 require([
-    "esri/WebMap",
-    "esri/views/MapView",
-    "esri/widgets/Home",
-    "esri/widgets/Editor",
-    "esri/widgets/LayerList",
-    "esri/widgets/Legend",
-    "esri/widgets/Zoom",
-    "esri/identity/OAuthInfo",
-    "esri/identity/IdentityManager"
-  ], (
-    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
-  ) => {
-      // Create an OAuthInfo object
-      const oAuthInfo = new OAuthInfo({
-          appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
-          popup: true, // Open OAuth in a popup window
-          popupCallbackUrl: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html" // Redirect back to web app
-              });
+  "esri/WebMap",
+  "esri/views/MapView",
+  "esri/widgets/Home",
+  "esri/widgets/Editor",
+  "esri/widgets/LayerList",
+  "esri/widgets/Legend",
+  "esri/widgets/Zoom",
+  "esri/identity/OAuthInfo",
+  "esri/identity/IdentityManager"
+], (
+  WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
+) => {
+  
+  // Create an OAuthInfo object to handle authentication
+  const oAuthInfo = new OAuthInfo({
+    appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
+    popup: true, // Open OAuth in a popup window
+    popupCallbackUrl: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html" // Callback URL for authentication
+  });
 
-      // Register OAuth Info with IdentityManager
-      IdentityManager.registerOAuthInfos([oAuthInfo]);
+  // Register OAuth information with IdentityManager
+  IdentityManager.registerOAuthInfos([oAuthInfo]);
 
-      // Add an event listener to handle messages from the callback.html
-        window.addEventListener("message", function(event) {
-          if (event.origin !== "https://rtgs-lab.github.io") {
-            console.warn("Unauthorized message origin:", event.origin);
-            return;
-          }
-          console.log("Received token URL:", event.data);
+  // Listen for authentication response messages from callback.html
+  window.addEventListener("message", function(event) {
+    if (event.origin !== "https://rtgs-lab.github.io") { 
+      console.warn("Unauthorized message origin:", event.origin);
+      return; // Ignore messages from untrusted origins
+    }
 
-          const tokenUrl = event.data; // URL containing the token
-          IdentityManager.handleRedirect(tokenUrl).then(() => {
-            console.log("User successfully signed in!");
-            loadWebMap();
-          }).catch((error) => {
-            console.error("Error handling redirect:", error);
-          });
-        });
+    console.log("Received token URL:", event.data);
 
-      IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
-          console.log("User is already signed in!");
-          loadWebMap();
-        }).catch(() => {
-          console.log("Sign-in required.");
-          IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing");
-        });
-      
-    // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
+    // Extract the token and expiration time from the received URL
+    const urlParams = new URLSearchParams(event.data.split("?")[1]);
+    const token = urlParams.get("access_token");
+    const expiresIn = urlParams.get("expires_in");
+
+    if (token) {
+      // Register the token with IdentityManager to establish user authentication
+      IdentityManager.registerToken({
+        token: token,
+        expires: new Date(Date.now() + expiresIn * 1000), // Convert expiry time to actual date
+        userId: "AuthenticatedUser" // Placeholder user ID
+      });
+
+      console.log("User successfully signed in!");
+      loadWebMap(); // Load the web map now that authentication is complete
+    } else {
+      console.error("Failed to retrieve token from URL.");
+    }
+  });
+
+  // Check if the user is already signed in
+  IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
+    console.log("User is already signed in!");
+    loadWebMap(); // Proceed with loading the web map
+  }).catch(() => {
+    console.log("Sign-in required.");
+    IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing"); // Prompt for sign-in
+  });
+
+  // Function to load the WebMap after successful authentication
+  function loadWebMap() {
+    // Create a map from the web map ID for "20241031_Demo_map" in ArcGIS Online
     const webmap = new WebMap({
       portalItem: {
         id: "bc54085fffa045a5a4911f3274ab97e0"
       }
     });
 
+    // Create a MapView to display the map
     const view = new MapView({
-      container: "viewDiv",
+      container: "viewDiv", // Element ID where the map will be placed
       map: webmap,
       constraints: {
-        rotationEnabled: false
+        rotationEnabled: false // Prevent rotation
       }
     });
 
+    // Execute when the view is ready
     view.when(() => {
-      // Create a container div for the Legend
-      const legendContainer = document.createElement("div");
-      legendContainer.id = "legend-container";
-      document.body.appendChild(legendContainer);
-  
-      // Add the Legend widget to the container
-      const legend = new Legend({
-        view: view,
-        container: legendContainer
-      });
-  
-      view.ui.add(legendContainer, {
-        position: "top-left",
-        index: 1
-      });
-    });
+      console.log("WebMap loaded successfully.");
+      
+      // Add the Home button widget
+      const home = new Home({ view });
+      view.ui.add(home, "top-left");
 
-    const home = new Home({
-      view: view
-    });
-  
-    // Add the Home widget to a custom position
-    const homeContainer = document.createElement("div");
-    homeContainer.className = "home-container";
-    document.body.appendChild(homeContainer);
-  
-    home.container = homeContainer;
-  
-    view.ui.add(homeContainer, "manual");
-  
-    view.when(() => {
+      // Add the LayerList widget
+      const layerList = new LayerList({ view });
+      view.ui.add(layerList, "bottom-left");
 
-      // Log each layer with its index and title in the WebMap
-      console.log("Available Layers:");
-      webmap.layers.forEach((layer, index) => {
-        console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
-      });
-
-      // Find the layer we're editing by title
+      // Locate the target layer for editing
       const targetLayer = webmap.layers.find(layer => 
-        layer.title === "Winter Workshop Activity 1"  // Change to appropriate layer if using for another webapp or project
+        layer.title === "Winter Workshop Activity 1" // Adjust based on your layer
       );
 
-      // Create editor, change settings to remove the ability to add or edit attachments
+      // Create Editor widget if the target layer exists
       if (targetLayer) {
         const editor = new Editor({
           view: view,
@@ -120,33 +110,23 @@ require([
         console.warn("Target layer not found!");
       }
 
-      // Create the LayerList widget
-      const layerList = new LayerList({
-        view: view
-      });
-
-      // Add LayerList to the bottom-left of the view
-      view.ui.add(layerList, {
-        position: "bottom-left"
-      });
-
-      // Add a text box in the upper-left corner
+      // Create and add text box with instructions
       const textBox = document.createElement("div");
       textBox.className = "text-box";
       textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your jurisdiction?";
       document.body.appendChild(textBox);
 
-      // Add the link box for sources
+      // Add the first link box with source information
       const linkBox = document.createElement("div");
       linkBox.className = "link-box";
       linkBox.innerHTML = '<a href="https://z.umn.edu/a2br" target="_blank">More about the layers</a>';
       document.body.appendChild(linkBox);
-          
-      // Add a box for link to Activity 2 app
-      const secondlinkBox = document.createElement("div");
-      secondlinkBox.className = "second-link-box";
-      secondlinkBox.innerHTML = '<a href ="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
-      document.body.appendChild(secondlinkBox);
 
+      // Add a second link box for transitioning to Activity 2
+      const secondLinkBox = document.createElement("div");
+      secondLinkBox.className = "second-link-box";
+      secondLinkBox.innerHTML = '<a href="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
+      document.body.appendChild(secondLinkBox);
     });
-  });
+  }
+});
