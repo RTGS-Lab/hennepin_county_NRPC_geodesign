@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OAuth Callback</title>
+  <script>
+    // Extract the full URL, which includes the authentication token
+    window.opener.postMessage(window.location.href, "*");
+    // Close the popup window
+    window.close();
+  </script>
+</head>
+<body>
+  Redirecting...
+</body>
+</html>
