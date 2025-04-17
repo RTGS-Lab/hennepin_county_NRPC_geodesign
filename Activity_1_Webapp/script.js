@@ -27,9 +27,9 @@ require([
             console.warn("Unauthorized message origin:", event.origin);
             return;
           }
+          console.log("Received token URL:", event.data);
 
           const tokenUrl = event.data; // URL containing the token
-            console.log("Received token URL:", event.data);
           IdentityManager.handleRedirect(tokenUrl).then(() => {
             console.log("User successfully signed in!");
             loadWebMap();
