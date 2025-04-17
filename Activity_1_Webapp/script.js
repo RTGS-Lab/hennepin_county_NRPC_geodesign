@@ -31,6 +31,7 @@ require([
 
     console.log("Received message:", event.data);
 
+    // Parse received message for URL
     const receivedUrl = new URL(event.data);
     console.log("Extracted URL:", receivedURL.href);
     
