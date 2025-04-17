@@ -11,7 +11,7 @@ require([
 ], (
   WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
 ) => {
-  
+
   // Create an OAuthInfo object to handle authentication
   const oAuthInfo = new OAuthInfo({
     appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
@@ -23,31 +23,60 @@ require([
   IdentityManager.registerOAuthInfos([oAuthInfo]);
 
   // Listen for authentication response messages from callback.html
-  window.addEventListener("message", function(event) {
+  window.addEventListener("message", async function(event) {
     if (event.origin !== "https://rtgs-lab.github.io") { 
       console.warn("Unauthorized message origin:", event.origin);
       return; // Ignore messages from untrusted origins
     }
 
-    console.log("Received token URL:", event.data);
+    console.log("Received message:", event.data);
 
-    // Extract the token and expiration time from the received URL
-    const urlParams = new URLSearchParams(event.data.split("?")[1]);
-    const token = urlParams.get("access_token");
-    const expiresIn = urlParams.get("expires_in");
+    // Extract the authorization code from the received URL
+    const urlParams = new URLSearchParams(new URL(event.data).search);
+    const authorizationCode = urlParams.get("code");
 
-    if (token) {
-      // Register the token with IdentityManager to establish user authentication
-      IdentityManager.registerToken({
-        token: token,
-        expires: new Date(Date.now() + expiresIn * 1000), // Convert expiry time to actual date
-        userId: "AuthenticatedUser" // Placeholder user ID
+    if (authorizationCode) {
+      console.log("Authorization code received:", authorizationCode);
+
+      // Exchange the authorization code for an access token
+      const exchangeTokenUrl = "https://www.arcgis.com/sharing/rest/oauth2/token/";
+      const params = new URLSearchParams({
+        client_id: "NpCWXmG2uJLnOlXc",  // Your App ID
+        grant_type: "authorization_code",
+        code: authorizationCode,  // Authorization code extracted from URL
+        redirect_uri: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html"
       });
 
-      console.log("User successfully signed in!");
-      loadWebMap(); // Load the web map now that authentication is complete
+      try {
+        const response = await fetch(exchangeTokenUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params.toString()
+        });
+
+        const data = await response.json();
+
+        if (data.access_token) {
+          console.log("Access token retrieved:", data.access_token);
+
+          // Register the token with IdentityManager
+          IdentityManager.registerToken({
+            token: data.access_token,
+            expires: new Date(Date.now() + data.expires_in * 1000),
+            userId: "AuthenticatedUser"
+          });
+
+          console.log("User successfully signed in!");
+          loadWebMap(); // Load the web map now that authentication is complete
+        } else {
+          console.error("Failed to retrieve access token:", data.error);
+        }
+      } catch (error) {
+        console.error("Token exchange error:", error);
+      }
+
     } else {
-      console.error("Failed to retrieve token from URL.");
+      console.error("Authorization code missing from URL.");
     }
   });
 
@@ -81,7 +110,7 @@ require([
     // Execute when the view is ready
     view.when(() => {
       console.log("WebMap loaded successfully.");
-      
+
       // Add the Home button widget
       const home = new Home({ view });
       view.ui.add(home, "top-left");
