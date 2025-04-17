@@ -29,25 +29,21 @@ require([
           }
 
           const tokenUrl = event.data; // URL containing the token
+            console.log("Received token URL:", event.data);
           IdentityManager.handleRedirect(tokenUrl).then(() => {
             console.log("User successfully signed in!");
+            loadWebMap();
           }).catch((error) => {
             console.error("Error handling redirect:", error);
           });
         });
-      
-      //Check if user is already signed in
-      //IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
-      //    loadWebMap();
-      //}).catch(() => {
-          // User is not signed in, prompt for sign in
-      //    IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing");
-      //});
 
       IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
           console.log("User is already signed in!");
+          loadWebMap();
         }).catch(() => {
           console.log("Sign-in required.");
+          IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing");
         });
       
     // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
