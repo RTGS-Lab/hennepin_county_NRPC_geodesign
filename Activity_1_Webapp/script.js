@@ -1,101 +1,15 @@
 require([
-  "esri/WebMap",
-  "esri/views/MapView",
-  "esri/widgets/Home",
-  "esri/widgets/Editor",
-  "esri/widgets/LayerList",
-  "esri/widgets/Legend",
-  "esri/widgets/Zoom",
-  "esri/identity/OAuthInfo",
-  "esri/identity/IdentityManager"
-], (
-  WebMap, MapView, Home, Editor, LayerList, Legend, Zoom, OAuthInfo, IdentityManager
-) => {
-
-  // Create an OAuthInfo object to handle authentication
-  const oAuthInfo = new OAuthInfo({
-    appId: "NpCWXmG2uJLnOlXc", // Application ID created in ArcGIS Online
-    popup: true, // Open OAuth in a popup window
-    popupCallbackUrl: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html" // Callback URL for authentication
-  });
-
-  // Register OAuth information with IdentityManager
-  IdentityManager.registerOAuthInfos([oAuthInfo]);
-
-  // Listen for authentication response messages from callback.html
-  window.addEventListener("message", async function(event) {
-    if (event.origin !== "https://rtgs-lab.github.io") { 
-      console.warn("Unauthorized message origin:", event.origin);
-      return; // Ignore messages from untrusted origins
-    }
-
-    console.log("Received message:", event.data);
-
-    const receivedUrl = new URL(event.data);
-    console.log("Extracted URL:", receivedUrl.href);
-    
-    // Extract the authorization code from the received URL
-    const urlParams = new URLSearchParams(receivedUrl.search);
-    const authorizationCode = urlParams.get("code");
-    console.log("Authorization Code:", authorizationCode);
-
-    if (authorizationCode) {
-      console.log("Authorization code received:", authorizationCode);
-
-      // Exchange the authorization code for an access token
-      const exchangeTokenUrl = "https://www.arcgis.com/sharing/rest/oauth2/token/";
-      const params = new URLSearchParams({
-        client_id: "NpCWXmG2uJLnOlXc",  // Your App ID
-        grant_type: "authorization_code",
-        code: authorizationCode,  // Authorization code extracted from URL
-        redirect_uri: "https://rtgs-lab.github.io/hennepin_county_NRPC_geodesign/Activity_1_Webapp/callback.html"
-      });
-
-      try {
-        const response = await fetch(exchangeTokenUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: params.toString()
-        });
-
-        const data = await response.json();
-
-        if (data.access_token) {
-          console.log("Access token retrieved:", data.access_token);
-
-          // Register the token with IdentityManager
-          IdentityManager.registerToken({
-            token: data.access_token,
-            expires: new Date(Date.now() + data.expires_in * 1000),
-            userId: "AuthenticatedUser"
-          });
-
-          console.log("User successfully signed in!");
-          loadWebMap(); // Load the web map now that authentication is complete
-        } else {
-          console.error("Failed to retrieve access token:", data.error);
-        }
-      } catch (error) {
-        console.error("Token exchange error:", error);
-      }
-
-    } else {
-      console.error("Authorization code missing from URL.");
-    }
-  });
-
-  // Check if the user is already signed in
-  IdentityManager.checkSignInStatus(oAuthInfo.portalUrl + "/sharing").then(() => {
-    console.log("User is already signed in!");
-    loadWebMap(); // Proceed with loading the web map
-  }).catch(() => {
-    console.log("Sign-in required.");
-    IdentityManager.getCredential(oAuthInfo.portalUrl + "/sharing"); // Prompt for sign-in
-  });
-
-  // Function to load the WebMap after successful authentication
-  function loadWebMap() {
-    // Create a map from the web map ID for "20241031_Demo_map" in ArcGIS Online
+    "esri/WebMap",
+    "esri/views/MapView",
+    "esri/widgets/Home",
+    "esri/widgets/Editor",
+    "esri/widgets/LayerList",
+    "esri/widgets/Legend",
+    "esri/widgets/Zoom",
+  ], (
+    WebMap, MapView, Home, Editor, LayerList, Legend, Zoom
+  ) => {
+    // Create a map from the webmap id for "20241031_Demo_map" in ArcGIS Online
     const webmap = new WebMap({
       portalItem: {
         id: "bc54085fffa045a5a4911f3274ab97e0"
