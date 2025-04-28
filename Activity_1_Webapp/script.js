@@ -16,60 +16,33 @@ require([
       }
     });
 
+    // Create a MapView to display the map
     const view = new MapView({
-      container: "viewDiv",
+      container: "viewDiv", // Element ID where the map will be placed
       map: webmap,
       constraints: {
-        rotationEnabled: false
+        rotationEnabled: false // Prevent rotation
       }
     });
 
+    // Execute when the view is ready
     view.when(() => {
-      // Create a container div for the Legend
-      const legendContainer = document.createElement("div");
-      legendContainer.id = "legend-container";
-      document.body.appendChild(legendContainer);
-  
-      // Add the Legend widget to the container
-      const legend = new Legend({
-        view: view,
-        container: legendContainer
-      });
-  
-      view.ui.add(legendContainer, {
-        position: "top-left",
-        index: 1
-      });
-    });
+      console.log("WebMap loaded successfully.");
 
-    const home = new Home({
-      view: view
-    });
-  
-    // Add the Home widget to a custom position
-    const homeContainer = document.createElement("div");
-    homeContainer.className = "home-container";
-    document.body.appendChild(homeContainer);
-  
-    home.container = homeContainer;
-  
-    view.ui.add(homeContainer, "manual");
-  
+      // Add the Home button widget
+      const home = new Home({ view });
+      view.ui.add(home, "top-left");
 
-    view.when(() => {
+      // Add the LayerList widget
+      const layerList = new LayerList({ view });
+      view.ui.add(layerList, "bottom-left");
 
-      // Log each layer with its index and title in the WebMap
-      console.log("Available Layers:");
-      webmap.layers.forEach((layer, index) => {
-        console.log(`Layer Index: ${index}, Title: ${layer.title}, ID: ${layer.id}`);
-      });
-
-      // Find the layer we're editing by title
+      // Locate the target layer for editing
       const targetLayer = webmap.layers.find(layer => 
-        layer.title === "Winter Workshop Activity 1"  // Change to appropriate layer if using for another webapp or project
+        layer.title === "Winter Workshop Activity 1" // Adjust based on your layer
       );
 
-      // Create editor, change settings to remove the ability to add or edit attachments
+      // Create Editor widget if the target layer exists
       if (targetLayer) {
         const editor = new Editor({
           view: view,
@@ -84,33 +57,23 @@ require([
         console.warn("Target layer not found!");
       }
 
-      // Create the LayerList widget
-      const layerList = new LayerList({
-        view: view
-      });
-
-      // Add LayerList to the bottom-left of the view
-      view.ui.add(layerList, {
-        position: "bottom-left"
-      });
-
-      // Add a text box in the upper-left corner
+      // Create and add text box with instructions
       const textBox = document.createElement("div");
       textBox.className = "text-box";
       textBox.innerText = "What are areas that are no-brainers for natural systems conservation/preservation in your jurisdiction?";
       document.body.appendChild(textBox);
 
-      // Add the link box for sources
+      // Add the first link box with source information
       const linkBox = document.createElement("div");
       linkBox.className = "link-box";
       linkBox.innerHTML = '<a href="https://z.umn.edu/a2br" target="_blank">More about the layers</a>';
       document.body.appendChild(linkBox);
-          
-      // Add a box for link to Activity 2 app
-      const secondlinkBox = document.createElement("div");
-      secondlinkBox.className = "second-link-box";
-      secondlinkBox.innerHTML = '<a href ="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
-      document.body.appendChild(secondlinkBox);
 
+      // Add a second link box for transitioning to Activity 2
+      const secondLinkBox = document.createElement("div");
+      secondLinkBox.className = "second-link-box";
+      secondLinkBox.innerHTML = '<a href="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
+      document.body.appendChild(secondLinkBox);
     });
-  });
+  }
+});
