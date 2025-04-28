@@ -105,12 +105,5 @@ require([
       linkBox.className = "link-box";
       linkBox.innerHTML = '<a href="https://z.umn.edu/a2br" target="_blank">More about the layers</a>';
       document.body.appendChild(linkBox);
-          
-      // Add a box for link to Activity 2 app
-      const secondlinkBox = document.createElement("div");
-      secondlinkBox.className = "second-link-box";
-      secondlinkBox.innerHTML = '<a href ="https://z.umn.edu/NRPCActivity2" target="_blank">Go to second activity</a>';
-      document.body.appendChild(secondlinkBox);
-
     });
   });
